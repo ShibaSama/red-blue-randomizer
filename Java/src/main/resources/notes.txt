@@ -1,5 +1,2 @@
-# install Mersenne Twister jar as a local dependency
-mvn install:install-file -Dfile="MersenneTwister.jar" -DgroupId=MersenneTwister -DartifactId=MersenneTwister -Dversion=1.0 -Dpackaging=jar
-
 # export executable jar containing all dependencies
 mvn clean compile assembly:single

@@ -5,19 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import ec.util.MersenneTwister;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
 
 public class RedBlueRandomizer {	
 		
 	private Map<Integer, Integer> swapMap;
-	private Random rand = new MersenneTwister(new Date().getTime());
+	private RandomGenerator rand = new MersenneTwister(ZonedDateTime.now().toEpochSecond());
 	private byte[] rom;
 	
 	//constants
@@ -208,14 +208,14 @@ public class RedBlueRandomizer {
 			}		
 		}
 		else{
-			int randomIndex = rand.nextInt(indices.length);	
+			int randomIndex = rand.nextInt(indices.length);
 			return (byte)indices[randomIndex];
 		}	
 	}	
 	
 	//progresses the RNG a random number of times to add to the randomness
 	private void shuffle(){
-		int loop = rand.nextInt(10);		
+		int loop = rand.nextInt(10);
 		for(int i=0; i<loop; i++){
 			rand.nextInt(indices.length);
 		}
