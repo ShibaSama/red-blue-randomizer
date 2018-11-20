@@ -1,5 +1,11 @@
 package redbluerandomizer;
 
+import static redbluerandomizer.Constants.OFFSET_PLAYER_STARTERS;
+import static redbluerandomizer.Constants.OFFSET_TITLE_SCREEN_PKMN;
+import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_END;
+import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_START;
+import static redbluerandomizer.Constants.OFFSET_WILD_AREAS;
+
 import java.util.Map;
 
 public class RomPrinter {
@@ -15,41 +21,42 @@ public class RomPrinter {
     pokemonNameMap = r.getPokemonNameMap();
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Print ROM (Debug)
-  /*******************************************/
+  /** **************************************** */
 
-  // prints contents of the ROM
+  // prtints contents of the ROM
   public void printROM() {
     int offset;
     // intro pokemon
     System.out.println("\nTitle Screen Pokemon**********************************\n");
-    for (int i = 0; i < r.titleScreenPokemon.length; i++) {
-      offset = r.titleScreenPokemon[i];
+    for (int i = 0; i < OFFSET_TITLE_SCREEN_PKMN.length; i++) {
+      offset = OFFSET_TITLE_SCREEN_PKMN[i];
       printPokemon(offset, rom[offset]);
     }
 
     // player starters
     System.out.println("\nPlayer Starter ***************************************\n");
-    for (int i = 0; i < r.playerStarters.length; i++) {
-      offset = r.playerStarters[i];
+    for (int i = 0; i < OFFSET_PLAYER_STARTERS.length; i++) {
+      offset = OFFSET_PLAYER_STARTERS[i];
       printPokemon(offset, rom[offset]);
     }
 
     // wild pokemon areas
     System.out.println("\nWild Pokemon Areas ***********************************");
-    for (int i = 0; i < r.areaOffsets.length; i++) {
-      System.out.println("\nWild Pokemon Area " + i + "\t" + intToHexStr(r.areaOffsets[i]) + "\n");
+    for (int i = 0; i < OFFSET_WILD_AREAS.length; i++) {
+      System.out.println(
+          "\nWild Pokemon Area " + i + "\t" + intToHexStr(OFFSET_WILD_AREAS[i]) + "\n");
       for (int j = 0; j < 20; j += 2) {
-        offset = r.areaOffsets[i];
+        offset = OFFSET_WILD_AREAS[i];
         printPokemon((offset + j + 1), rom[offset + j], rom[offset + j + 1]);
       }
     }
 
     // trainer pokemon
     System.out.println("\nTrainer Pokemon **************************************\n");
-    int a = r.trainerPokemonStart;
-    while (a < r.trainerPokemonEnd) {
+    int a = OFFSET_TRAINER_PKMN_START;
+    while (a < OFFSET_TRAINER_PKMN_END) {
       System.out.println("\nOffset:" + intToHexStr(a));
       if (byteToInt(rom[a]) == 0x0 && byteToInt(rom[a + 1]) != 0xFF) {
         a = printRegularTrainer(a);
@@ -59,9 +66,9 @@ public class RomPrinter {
     }
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Print ROM Support Methods
-  /*******************************************/
+  /** **************************************** */
   private void printPokemon(int offset, byte pokemonIndex) {
     String output = intToHexStr(offset) + "\t";
     output += this.getPokemonName(pokemonIndex);

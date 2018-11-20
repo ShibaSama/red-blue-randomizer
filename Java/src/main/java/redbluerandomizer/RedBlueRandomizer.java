@@ -1,5 +1,18 @@
 package redbluerandomizer;
 
+import static redbluerandomizer.Constants.LEGENDARY_INDEXES;
+import static redbluerandomizer.Constants.OFFSET_PLAYER_STARTERS;
+import static redbluerandomizer.Constants.OFFSET_ROM_NAME_END;
+import static redbluerandomizer.Constants.OFFSET_ROM_NAME_START;
+import static redbluerandomizer.Constants.OFFSET_TITLE_SCREEN_PKMN;
+import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_END;
+import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_START;
+import static redbluerandomizer.Constants.OFFSET_WILD_AREAS;
+import static redbluerandomizer.Constants.PKMN_INDEXES;
+import static redbluerandomizer.Constants.PKMN_NAMES;
+import static redbluerandomizer.Constants.ROM_NAME_BLUE;
+import static redbluerandomizer.Constants.ROM_NAME_RED;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,202 +28,6 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 public class RedBlueRandomizer {
 
-  private Map<Integer, Integer> swapMap;
-  private RandomGenerator rand = new MersenneTwister(ZonedDateTime.now().toEpochSecond());
-  private byte[] rom;
-
-  // constants
-  public final String redRomName = "POKEMON RED";
-  public final String blueRomName = "POKEMON BLUE";
-  public final int mew = 0x15;
-
-  // lookups
-  public final String[] names = {
-    "Rhydon",
-    "Kangaskhan",
-    "NidoranM",
-    "Clefairy",
-    "Spearow",
-    "Voltorb",
-    "Nidoking",
-    "Slowbro",
-    "Ivysaur",
-    "Exeggutor",
-    "Lickitung",
-    "Exeggcute",
-    "Grimer",
-    "Gengar",
-    "NidoranF",
-    "Nidoqueen",
-    "Cubone",
-    "Rhyhorn",
-    "Lapras",
-    "Arcanine",
-    "Mew",
-    "Gyarados",
-    "Shellder",
-    "Tentacool",
-    "Gastly",
-    "Scyther",
-    "Staryu",
-    "Blastoise",
-    "Pinsir",
-    "Tangela",
-    "Growlithe",
-    "Onix",
-    "Fearow",
-    "Pidgey",
-    "Slowpoke",
-    "Kadabra",
-    "Graveler",
-    "Chansey",
-    "Machoke",
-    "Mr. Mime",
-    "Hitmonlee",
-    "Hitmonchan",
-    "Arbok",
-    "Parasect",
-    "Psyduck",
-    "Drowzee",
-    "Golem",
-    "Magmar",
-    "Electabuzz",
-    "Magneton",
-    "Koffing",
-    "Mankey",
-    "Seel",
-    "Diglett",
-    "Tauros",
-    "Farfetch'd",
-    "Venonat",
-    "Dragonite",
-    "Doduo",
-    "Poliwag",
-    "Jynx",
-    "Moltres",
-    "Articuno",
-    "Zapdos",
-    "Ditto",
-    "Meowth",
-    "Krabby",
-    "Vulpix",
-    "Ninetales",
-    "Pikachu",
-    "Raichu",
-    "Dratini",
-    "Dragonair",
-    "Kabuto",
-    "Kabutops",
-    "Horsea",
-    "Seadra",
-    "Sandshrew",
-    "Sandslash",
-    "Omanyte",
-    "Omastar",
-    "Jigglypuff",
-    "Wigglytuff",
-    "Eevee",
-    "Flareon",
-    "Jolteon",
-    "Vaporeon",
-    "Machop",
-    "Zubat",
-    "Ekans",
-    "Paras",
-    "Poliwhirl",
-    "Poliwrath",
-    "Weedle",
-    "Kakuna",
-    "Beedrill",
-    "Dodrio",
-    "Primeape",
-    "Dugtrio",
-    "Venomoth",
-    "Dewgong",
-    "Caterpie",
-    "Metapod",
-    "Butterfree",
-    "Machamp",
-    "Golduck",
-    "Hypno",
-    "Golbat",
-    "Mewtwo",
-    "Snorlax",
-    "Magikarp",
-    "Muk",
-    "Kingler",
-    "Cloyster",
-    "Electrode",
-    "Clefable",
-    "Weezing",
-    "Persian",
-    "Marowak",
-    "Haunter",
-    "Abra",
-    "Alakazam",
-    "Pidgeotto",
-    "Pidgeot",
-    "Starmie",
-    "Bulbasaur",
-    "Venusaur",
-    "Tentacruel",
-    "Goldeen",
-    "Seaking",
-    "Ponyta",
-    "Rapidash",
-    "Rattata",
-    "Raticate",
-    "Nidorino",
-    "Nidorina",
-    "Geodude",
-    "Porygon",
-    "Aerodactyl",
-    "Magnemite",
-    "Charmander",
-    "Squirtle",
-    "Charmeleon",
-    "Wartortle",
-    "Charizard",
-    "Oddish",
-    "Gloom",
-    "Vileplume",
-    "Bellsprout",
-    "Weepinbell",
-    "Victreebel"
-  };
-
-  public final int[] indices = {
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,
-    0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x21, 0x22,
-    0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x33,
-    0x35, 0x36, 0x37, 0x39, 0x3A, 0x3B, 0x3C, 0x40, 0x41, 0x42, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B,
-    0x4C, 0x4D, 0x4E, 0x52, 0x53, 0x54, 0x55, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x60, 0x61, 0x62,
-    0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72,
-    0x74, 0x75, 0x76, 0x77, 0x78, 0x7B, 0x7C, 0x7D, 0x7E, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x88,
-    0x8A, 0x8B, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
-    0x9D, 0x9E, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAD, 0xB0, 0xB1, 0xB2, 0xB3,
-    0xB4, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE
-  };
-  public final int[] legendaryIndices = {0x49, 0x4A, 0x4B, 0x83, 0x15};
-
-  // offsets
-  public final int romNameStart = 0x134;
-  public final int romNameEnd = 0x144;
-  public final int[] playerStarters = {0x1D10E, 0x1D11F, 0x1D130};
-  public final int[] titleScreenPokemon = {
-    0x4399, 0x4588, 0x4589, 0x458A, 0x458B, 0x458C, 0x458D, 0x458E, 0x458F, 0x4590, 0x4591, 0x4592,
-    0x4593, 0x4594, 0x4595, 0x4596, 0x4597
-  };
-  public final int[] areaOffsets = {
-    0xD0E0, 0xD0F6, 0xD10C, 0xD122, 0xD138, 0xD14E, 0xD164, 0xD17A, 0xD190, 0xD1A6, 0xD1BC, 0xD1D2,
-    0xD1E8, 0xD1FE, 0xD214, 0xD22A, 0xD240, 0xD256, 0xD26C, 0xD282, 0xD298, 0xD2B2, 0xD2C8, 0xD2DE,
-    0xD2F4, 0xD30A, 0xD320, 0xD336, 0xD34C, 0xD362, 0xD378, 0xD38E, 0xD3A4, 0xD3BA, 0xD3D0, 0xD3E6,
-    0xD3FD, 0xD412, 0xD428, 0xD43E, 0xD454, 0xD46A, 0xD480, 0xD496, 0xD4AC, 0xD4C2, 0xD4D8, 0xD4ED,
-    0xD502, 0xD518, 0xD52E, 0xD544, 0xD55A, 0xD570, 0xD586, 0xD59C, 0xD5B2
-  };
-  public final int trainerPokemonStart = 0x39DCD;
-  public final int trainerPokemonEnd = 0x3A52D;
-
   // options
   private boolean titleScreenToggle = false;
   private boolean playerStartersToggle = false;
@@ -219,9 +36,13 @@ public class RedBlueRandomizer {
   private boolean oneToOneToggle = false;
   private boolean noLegendariesToggle = false;
 
-  /*******************************************/
+  private Map<Integer, Integer> swapMap;
+  private RandomGenerator rand = new MersenneTwister(ZonedDateTime.now().toEpochSecond());
+  private byte[] rom;
+
+  /** **************************************** */
   // Randomize
-  /*******************************************/
+  /** **************************************** */
 
   // performs the randomization (duh...)
   public void randomize() {
@@ -231,8 +52,8 @@ public class RedBlueRandomizer {
     int offset;
     // intro pokemon
     if (titleScreenToggle) {
-      for (int i = 0; i < titleScreenPokemon.length; i++) {
-        offset = titleScreenPokemon[i];
+      for (int i = 0; i < OFFSET_TITLE_SCREEN_PKMN.length; i++) {
+        offset = OFFSET_TITLE_SCREEN_PKMN[i];
         if (oneToOneToggle) {
           rom[offset] = getReplacement(rom[offset]);
         } else {
@@ -242,8 +63,8 @@ public class RedBlueRandomizer {
     }
     // player starters
     if (playerStartersToggle) {
-      for (int i = 0; i < playerStarters.length; i++) {
-        offset = playerStarters[i];
+      for (int i = 0; i < OFFSET_PLAYER_STARTERS.length; i++) {
+        offset = OFFSET_PLAYER_STARTERS[i];
         if (oneToOneToggle) {
           rom[offset] = getReplacement(rom[offset]);
         } else {
@@ -253,9 +74,9 @@ public class RedBlueRandomizer {
     }
     // wild pokemon areas
     if (wildAreasToggle) {
-      for (int i = 0; i < areaOffsets.length; i++) {
+      for (int i = 0; i < OFFSET_WILD_AREAS.length; i++) {
         for (int j = 0; j < 20; j += 2) {
-          offset = areaOffsets[i];
+          offset = OFFSET_WILD_AREAS[i];
           if (oneToOneToggle) {
             rom[offset + j + 1] = getReplacement(rom[offset + j + 1]);
           } else {
@@ -266,8 +87,8 @@ public class RedBlueRandomizer {
     }
     // pokemon trainers
     if (trainersToggle) {
-      int i = trainerPokemonStart;
-      while (i < trainerPokemonEnd) {
+      int i = OFFSET_TRAINER_PKMN_START;
+      while (i < OFFSET_TRAINER_PKMN_END) {
         if (byteToInt(rom[i]) == 0x0 && byteToInt(rom[i + 1]) != 0xFF) {
           i = randomizeRegularTrainer(i);
         } else {
@@ -277,9 +98,9 @@ public class RedBlueRandomizer {
     }
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Randomize Support Methods
-  /*******************************************/
+  /** **************************************** */
 
   // randomizes a regular trainer
   private int randomizeRegularTrainer(int offset) {
@@ -328,15 +149,15 @@ public class RedBlueRandomizer {
       int randomIndex;
       int randomPokemon;
       while (true) {
-        randomIndex = rand.nextInt(indices.length);
-        randomPokemon = indices[randomIndex];
+        randomIndex = rand.nextInt(PKMN_INDEXES.length);
+        randomPokemon = PKMN_INDEXES[randomIndex];
         if (!isLegendaryPokemon(randomPokemon)) {
           return (byte) randomPokemon;
         }
       }
     } else {
-      int randomIndex = rand.nextInt(indices.length);
-      return (byte) indices[randomIndex];
+      int randomIndex = rand.nextInt(PKMN_INDEXES.length);
+      return (byte) PKMN_INDEXES[randomIndex];
     }
   }
 
@@ -344,27 +165,27 @@ public class RedBlueRandomizer {
   private void shuffle() {
     int loop = rand.nextInt(10);
     for (int i = 0; i < loop; i++) {
-      rand.nextInt(indices.length);
+      rand.nextInt(PKMN_INDEXES.length);
     }
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Lookup Methods
-  /*******************************************/
+  /** **************************************** */
 
   // creates a one-to-one randomization of the pokemon list
   public HashMap<Integer, Integer> getOneToOneMap() {
     HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
     List<Integer> temp = getPokemonIndexes();
     if (noLegendariesToggle) {
-      for (Integer legendaryIndex : legendaryIndices) {
+      for (Integer legendaryIndex : LEGENDARY_INDEXES) {
         int i = temp.indexOf(legendaryIndex);
         temp.set(i, byteToInt(getRandomPokemonIndex()));
       }
     }
 
     Integer newIndex;
-    for (Integer oldIndex : indices) {
+    for (Integer oldIndex : PKMN_INDEXES) {
       newIndex = temp.get(rand.nextInt(temp.size()));
       map.put(oldIndex, newIndex);
       temp.remove(newIndex);
@@ -379,7 +200,7 @@ public class RedBlueRandomizer {
 
   // determines if a given pokemon index belongs to a legendary
   public boolean isLegendaryPokemon(int index) {
-    for (int legendaryIndex : legendaryIndices) {
+    for (int legendaryIndex : LEGENDARY_INDEXES) {
       if (index == legendaryIndex) {
         return true;
       }
@@ -390,7 +211,7 @@ public class RedBlueRandomizer {
   // returns a list of all the pokemon's indexes
   public ArrayList<Integer> getPokemonIndexes() {
     ArrayList<Integer> indexes = new ArrayList<Integer>();
-    for (int index : indices) {
+    for (int index : PKMN_INDEXES) {
       indexes.add(index);
     }
     return indexes;
@@ -399,15 +220,15 @@ public class RedBlueRandomizer {
   // returns a Map of all pokemon indexes and names
   public HashMap<Integer, String> getPokemonNameMap() {
     HashMap<Integer, String> nameMap = new HashMap<Integer, String>();
-    for (int i = 0; i < indices.length; i++) {
-      nameMap.put(indices[i], names[i]);
+    for (int i = 0; i < PKMN_INDEXES.length; i++) {
+      nameMap.put(PKMN_INDEXES[i], PKMN_NAMES[i]);
     }
     return nameMap;
   }
 
-  /*******************************************/
+  /** **************************************** */
   // File I/O
-  /*******************************************/
+  /** **************************************** */
 
   // reads in the ROM given a filepath
   public void readRom(String filePath) {
@@ -438,11 +259,11 @@ public class RedBlueRandomizer {
   public boolean isPokemonRedBlue() {
     try {
       String romName = "";
-      for (int i = romNameStart; i < romNameEnd; i++) {
+      for (int i = OFFSET_ROM_NAME_START; i < OFFSET_ROM_NAME_END; i++) {
         romName += (char) byteToInt(rom[i]);
       }
       romName = romName.trim();
-      if (romName.equals(redRomName) || romName.equals(blueRomName)) {
+      if (romName.equals(ROM_NAME_RED) || romName.equals(ROM_NAME_BLUE)) {
         return true;
       }
       return false;
@@ -451,18 +272,18 @@ public class RedBlueRandomizer {
     }
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Misc.
-  /*******************************************/
+  /** **************************************** */
 
   // converts a byte to an int
   private int byteToInt(byte b) {
     return b & 0xFF;
   }
 
-  /*******************************************/
+  /** **************************************** */
   // Setters/Getters
-  /*******************************************/
+  /** **************************************** */
 
   // toggle setters
   public void setTitleScreenToggle(boolean toggle) {

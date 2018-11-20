@@ -5,24 +5,22 @@ import javax.swing.filechooser.FileFilter;
 
 public class GameboyFileFilter extends FileFilter {
 
-  private String description = ".gb ROM files";
-  private String regex = ".*\\.gb$";
+  private static final String DESCRIPTION = ".gb ROM files";
+  private static final String REGEX = ".*\\.gb$";
 
   public boolean accept(File file) {
+
+    // ensure selection isn't a directory
     if (file.isDirectory()) {
       return true;
     }
 
-    String fileName = file.getName().toLowerCase();
-    if (fileName.matches(regex)) {
-      return true;
-    } else {
-      return false;
-    }
+    // determine if filename is an acceptable .gb file
+    return file.getName().toLowerCase().matches(REGEX);
   }
 
   @Override
   public String getDescription() {
-    return description;
+    return DESCRIPTION;
   }
 }
