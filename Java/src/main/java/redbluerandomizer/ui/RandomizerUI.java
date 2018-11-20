@@ -159,7 +159,7 @@ public class RandomizerUI {
                 // set options
                 randomizer.setTitleScreenToggle(titleScreenCheckBox.isSelected());
                 randomizer.setPlayerStartersToggle(starterCheckBox.isSelected());
-                randomizer.setwildAreasToggle(wildCheckBox.isSelected());
+                randomizer.setWildAreasToggle(wildCheckBox.isSelected());
                 randomizer.setTrainersToggle(trainerCheckBox.isSelected());
                 randomizer.setOneToOneToggle(oneToOneReplacement.isSelected());
                 randomizer.setNoLegendariesToggle(noLegendariesCheckBox.isSelected());

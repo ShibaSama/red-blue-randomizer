@@ -327,7 +327,7 @@ public class RedBlueRandomizer {
     this.playerStartersToggle = toggle;
   }
 
-  public void setwildAreasToggle(boolean toggle) {
+  public void setWildAreasToggle(boolean toggle) {
     this.wildAreasToggle = toggle;
   }
 

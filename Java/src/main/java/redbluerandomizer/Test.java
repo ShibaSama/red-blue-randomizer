@@ -14,7 +14,7 @@ public class Test {
     br.setPlayerStartersToggle(true);
     br.setTitleScreenToggle(true);
     br.setTrainersToggle(true);
-    br.setwildAreasToggle(true);
+    br.setWildAreasToggle(true);
     br.randomize();
 
     RomPrinter printer = new RomPrinter(br);
