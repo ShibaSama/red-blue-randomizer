@@ -19,7 +19,7 @@ public class RomPrinter {
   // Print ROM (Debug)
   /*******************************************/
 
-  // prtints contents of the ROM
+  // prints contents of the ROM
   public void printROM() {
     int offset;
     // intro pokemon
