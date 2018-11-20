@@ -178,8 +178,8 @@ public class Constants {
   public static final int[] LEGENDARY_INDEXES = {0x49, 0x4A, 0x4B, 0x83, 0x15};
 
   // offsets
-  public static final int OFFSET_ROM_NAME_START = 0x134;
-  public static final int OFFSET_ROM_NAME_END = 0x144;
+  public static final int OFFSET_ROM_TITLE_START = 0x134;
+  public static final int OFFSET_ROM_TITLE_END = 0x144;
   public static final int[] OFFSET_PLAYER_STARTERS = {0x1D10E, 0x1D11F, 0x1D130};
 
   public static final int[] OFFSET_TITLE_SCREEN_PKMN = {
@@ -197,4 +197,7 @@ public class Constants {
 
   public static final int OFFSET_TRAINER_PKMN_START = 0x39DCD;
   public static final int OFFSET_TRAINER_PKMN_END = 0x3A52D;
+
+  // misc
+  public static final int BYTE_MASK = 0xFF;
 }

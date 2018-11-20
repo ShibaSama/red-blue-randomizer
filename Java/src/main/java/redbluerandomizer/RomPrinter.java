@@ -1,5 +1,6 @@
 package redbluerandomizer;
 
+import static redbluerandomizer.Constants.BYTE_MASK;
 import static redbluerandomizer.Constants.OFFSET_PLAYER_STARTERS;
 import static redbluerandomizer.Constants.OFFSET_TITLE_SCREEN_PKMN;
 import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_END;
@@ -21,13 +22,10 @@ public class RomPrinter {
     pokemonNameMap = r.getPokemonNameMap();
   }
 
-  /** **************************************** */
-  // Print ROM (Debug)
-  /** **************************************** */
-
-  // prtints contents of the ROM
+  /** Prints the relevant data in the ROM. */
   public void printROM() {
     int offset;
+
     // intro pokemon
     System.out.println("\nTitle Screen Pokemon**********************************\n");
     for (int i = 0; i < OFFSET_TITLE_SCREEN_PKMN.length; i++) {
@@ -66,15 +64,25 @@ public class RomPrinter {
     }
   }
 
-  /** **************************************** */
-  // Print ROM Support Methods
-  /** **************************************** */
+	/**
+	 * Prints a pokemon's ROM offset location and its name.
+	 *
+	 * @param offset Location of the pokemon in the ROM.
+	 * @param pokemonIndex The pokemon's id.
+	 */
   private void printPokemon(int offset, byte pokemonIndex) {
     String output = intToHexStr(offset) + "\t";
     output += this.getPokemonName(pokemonIndex);
     System.out.println(output);
   }
 
+	/**
+	 * Print's a pokemon's ROM offset location, its level, and its name.
+	 *
+	 * @param offset Location of the pokemon in the ROM.
+	 * @param level The pokemon's level.
+	 * @param pokemonIndex The pokemon's id.
+	 */
   private void printPokemon(int offset, int level, byte pokemonIndex) {
     String output = intToHexStr(offset) + "\t";
     if (("Level " + level).length() == 7) {
@@ -86,7 +94,12 @@ public class RomPrinter {
     System.out.println(output);
   }
 
-  // prints a regular trainer
+	/**
+	 * Prints the pokemon belonging to a regular trainer.
+	 *
+	 * @param offset Cursor location where the regular trainer's pokemon data begins.
+	 * @return Cursor location after parsing the regular trainer's pokemon data.
+	 */
   private int printRegularTrainer(int offset) {
     offset++;
     System.out.println("Level: " + this.byteToInt(rom[offset]));
@@ -104,7 +117,12 @@ public class RomPrinter {
     return offset;
   }
 
-  // prints a special trainer
+	/**
+	 * Prints the pokemon belonging to a special trainer.
+	 *
+	 * @param offset Cursor location where the special trainer's pokemon data begins.
+	 * @return Cursor location after parsing the special trainer's pokemon data.
+	 */
   private int printSpecialTrainer(int offset) {
     offset += 2;
     boolean loop = true;
@@ -120,23 +138,43 @@ public class RomPrinter {
     return offset;
   }
 
-  // returns a pokemon's name based on its index
+	/**
+	 * Returns a pokemon's name based on its id.
+	 *
+	 * @param pokemonIndex A pokemon id.
+	 * @return The name belonging to the pokemon id.
+	 */
   public String getPokemonName(int pokemonIndex) {
     return (String) pokemonNameMap.get(pokemonIndex);
   }
 
-  // returns a pokemon's name based on its index
+	/**
+	 * Returns a pokemon's name based on its id.
+	 *
+	 * @param pokemonIndex A pokemon id.
+	 * @return The name belonging to the pokemon id.
+	 */
   public String getPokemonName(byte pokemonIndex) {
     return getPokemonName(byteToInt(pokemonIndex));
   }
 
-  // converts int to a hex string
+	/**
+	 * Converts an int to a hex string.
+	 *
+	 * @param i An integer.
+	 * @return The hex string value of the provided integer.
+	 */
   private String intToHexStr(int i) {
     return String.format("0x%02X", i);
   }
 
-  // converts a byte to an int
+	/**
+	 * Converts a byte to an int.
+	 *
+	 * @param b A byte.
+	 * @return The integer value of the byte.
+	 */
   private int byteToInt(byte b) {
-    return b & 0xFF;
+    return b & BYTE_MASK;
   }
 }

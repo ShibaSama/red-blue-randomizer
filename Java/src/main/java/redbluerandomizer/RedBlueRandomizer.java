@@ -1,9 +1,10 @@
 package redbluerandomizer;
 
+import static redbluerandomizer.Constants.BYTE_MASK;
 import static redbluerandomizer.Constants.LEGENDARY_INDEXES;
 import static redbluerandomizer.Constants.OFFSET_PLAYER_STARTERS;
-import static redbluerandomizer.Constants.OFFSET_ROM_NAME_END;
-import static redbluerandomizer.Constants.OFFSET_ROM_NAME_START;
+import static redbluerandomizer.Constants.OFFSET_ROM_TITLE_END;
+import static redbluerandomizer.Constants.OFFSET_ROM_TITLE_START;
 import static redbluerandomizer.Constants.OFFSET_TITLE_SCREEN_PKMN;
 import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_END;
 import static redbluerandomizer.Constants.OFFSET_TRAINER_PKMN_START;
@@ -28,6 +29,10 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 public class RedBlueRandomizer {
 
+  private Map<Integer, Integer> swapMap;
+  private RandomGenerator rand = new MersenneTwister(ZonedDateTime.now().toEpochSecond());
+  private byte[] rom;
+
   // options
   private boolean titleScreenToggle = false;
   private boolean playerStartersToggle = false;
@@ -36,15 +41,7 @@ public class RedBlueRandomizer {
   private boolean oneToOneToggle = false;
   private boolean noLegendariesToggle = false;
 
-  private Map<Integer, Integer> swapMap;
-  private RandomGenerator rand = new MersenneTwister(ZonedDateTime.now().toEpochSecond());
-  private byte[] rom;
-
-  /** **************************************** */
-  // Randomize
-  /** **************************************** */
-
-  // performs the randomization (duh...)
+  /** Performs the randomization...duh. */
   public void randomize() {
     // setup
     swapMap = getOneToOneMap();
@@ -98,11 +95,12 @@ public class RedBlueRandomizer {
     }
   }
 
-  /** **************************************** */
-  // Randomize Support Methods
-  /** **************************************** */
-
-  // randomizes a regular trainer
+  /**
+   * Randomizes a regular trainer's pokemon.
+   *
+   * @param offset Cursor location where the regular trainer's pokemon data begins.
+   * @return Cursor location after parsing the regular trainer's pokemon data.
+   */
   private int randomizeRegularTrainer(int offset) {
     offset += 2;
     boolean loop = true;
@@ -122,7 +120,12 @@ public class RedBlueRandomizer {
     return offset;
   }
 
-  // randomizer a special trainer
+  /**
+   * Randomizes a special trainer's pokemon.
+   *
+   * @param offset Cursor location where the special trainer's pokemon data begins.
+   * @return Cursor location after parsing the special trainer's pokemon data.
+   */
   private int randomizeSpecialTrainer(int offset) {
     offset += 2;
     boolean loop = true;
@@ -142,7 +145,11 @@ public class RedBlueRandomizer {
     return offset;
   }
 
-  // returns a random pokemon index
+  /**
+   * Generates a random pokemon id number.
+   *
+   * @return A random pokemon id number.
+   */
   private byte getRandomPokemonIndex() {
     shuffle();
     if (noLegendariesToggle) {
@@ -161,7 +168,7 @@ public class RedBlueRandomizer {
     }
   }
 
-  // progresses the RNG a random number of times to add to the randomness
+  /** Progresses the RNG a random number of times to add to the randomness. */
   private void shuffle() {
     int loop = rand.nextInt(10);
     for (int i = 0; i < loop; i++) {
@@ -169,11 +176,14 @@ public class RedBlueRandomizer {
     }
   }
 
-  /** **************************************** */
-  // Lookup Methods
-  /** **************************************** */
-
-  // creates a one-to-one randomization of the pokemon list
+  /**
+   * Generates a one-to-one randomization of the pokemon list. Using the one-to-one randomization,
+   * any reference to pokemon A in the original ROM will be replaced by pokemon X where X is a
+   * randomly selected pokemon. The resulting map is bidirectional so one randomly selected pokemon
+   * will only be assigned to one original pokemon.
+   *
+   * @return A one-to-one mapping of original pokemon ids to random pokemon ids.
+   */
   public HashMap<Integer, Integer> getOneToOneMap() {
     HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
     List<Integer> temp = getPokemonIndexes();
@@ -193,12 +203,23 @@ public class RedBlueRandomizer {
     return map;
   }
 
-  // gets the replacement for a pokemon using the swap map generated
+  /**
+   * Gets the replacement for a pokemon using the swap map generated.
+   *
+   * @param oldIndex A pokemon's id in the original ROM.
+   * @return The pokemon's randomized id.
+   */
   public byte getReplacement(byte oldIndex) {
     return (byte) swapMap.get(byteToInt(oldIndex)).intValue();
   }
 
-  // determines if a given pokemon index belongs to a legendary
+  /**
+   * Determines if a given pokemon id belongs to a legendary pokemon. (Articuno, Zapdos, Moltres,
+   * Mewtwo, Mew)
+   *
+   * @param index A pokemon id.
+   * @return If the pokemon id belongs to a legendary pokemon.
+   */
   public boolean isLegendaryPokemon(int index) {
     for (int legendaryIndex : LEGENDARY_INDEXES) {
       if (index == legendaryIndex) {
@@ -208,7 +229,11 @@ public class RedBlueRandomizer {
     return false;
   }
 
-  // returns a list of all the pokemon's indexes
+  /**
+   * Generates a list of all pokemon ids.
+   *
+   * @return A list of all pokemon ids.
+   */
   public ArrayList<Integer> getPokemonIndexes() {
     ArrayList<Integer> indexes = new ArrayList<Integer>();
     for (int index : PKMN_INDEXES) {
@@ -217,7 +242,11 @@ public class RedBlueRandomizer {
     return indexes;
   }
 
-  // returns a Map of all pokemon indexes and names
+  /**
+   * Generates a map with pokemon id as the key and pokemon name as the value.
+   *
+   * @return A map of pokemon ids to pokemon names.
+   */
   public HashMap<Integer, String> getPokemonNameMap() {
     HashMap<Integer, String> nameMap = new HashMap<Integer, String>();
     for (int i = 0; i < PKMN_INDEXES.length; i++) {
@@ -226,11 +255,11 @@ public class RedBlueRandomizer {
     return nameMap;
   }
 
-  /** **************************************** */
-  // File I/O
-  /** **************************************** */
-
-  // reads in the ROM given a filepath
+  /**
+   * Reads in a ROM file.
+   *
+   * @param filePath Path of the ROM to read in.
+   */
   public void readRom(String filePath) {
     try {
       FileInputStream stream = new FileInputStream(filePath);
@@ -244,7 +273,11 @@ public class RedBlueRandomizer {
     }
   }
 
-  // saves the ROM to a specified filepath
+  /**
+   * Saves the ROM to a file.
+   *
+   * @param filePath Path to save the ROM to.
+   */
   public void saveRom(String filePath) {
     try {
       FileOutputStream stream = new FileOutputStream(new File(filePath));
@@ -255,11 +288,15 @@ public class RedBlueRandomizer {
     }
   }
 
-  // checks the ROM's name
+  /**
+   * Checks the ROM's title header to verify if the ROM is Pokemon Red or Pokemon Blue (US).
+   *
+   * @return If ROM is a pokemon red/blue ROM.
+   */
   public boolean isPokemonRedBlue() {
     try {
       String romName = "";
-      for (int i = OFFSET_ROM_NAME_START; i < OFFSET_ROM_NAME_END; i++) {
+      for (int i = OFFSET_ROM_TITLE_START; i < OFFSET_ROM_TITLE_END; i++) {
         romName += (char) byteToInt(rom[i]);
       }
       romName = romName.trim();
@@ -272,20 +309,16 @@ public class RedBlueRandomizer {
     }
   }
 
-  /** **************************************** */
-  // Misc.
-  /** **************************************** */
-
-  // converts a byte to an int
+  /**
+   * Converts a byte to an int.
+   *
+   * @param b The byte.
+   * @return Int value of the byte.
+   */
   private int byteToInt(byte b) {
-    return b & 0xFF;
+    return b & BYTE_MASK;
   }
 
-  /** **************************************** */
-  // Setters/Getters
-  /** **************************************** */
-
-  // toggle setters
   public void setTitleScreenToggle(boolean toggle) {
     this.titleScreenToggle = toggle;
   }
