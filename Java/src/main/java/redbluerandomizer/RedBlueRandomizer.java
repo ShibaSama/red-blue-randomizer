@@ -184,7 +184,7 @@ public class RedBlueRandomizer {
    *
    * @return A one-to-one mapping of original pokemon ids to random pokemon ids.
    */
-  public HashMap<Integer, Integer> getOneToOneMap() {
+  private HashMap<Integer, Integer> getOneToOneMap() {
     HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
     List<Integer> temp = getPokemonIndexes();
     if (noLegendariesToggle) {
@@ -209,7 +209,7 @@ public class RedBlueRandomizer {
    * @param oldIndex A pokemon's id in the original ROM.
    * @return The pokemon's randomized id.
    */
-  public byte getReplacement(byte oldIndex) {
+  private byte getReplacement(byte oldIndex) {
     return (byte) swapMap.get(byteToInt(oldIndex)).intValue();
   }
 
@@ -220,7 +220,7 @@ public class RedBlueRandomizer {
    * @param index A pokemon id.
    * @return If the pokemon id belongs to a legendary pokemon.
    */
-  public boolean isLegendaryPokemon(int index) {
+  private boolean isLegendaryPokemon(int index) {
     for (int legendaryIndex : LEGENDARY_INDEXES) {
       if (index == legendaryIndex) {
         return true;
@@ -234,7 +234,7 @@ public class RedBlueRandomizer {
    *
    * @return A list of all pokemon ids.
    */
-  public ArrayList<Integer> getPokemonIndexes() {
+  private ArrayList<Integer> getPokemonIndexes() {
     ArrayList<Integer> indexes = new ArrayList<Integer>();
     for (int index : PKMN_INDEXES) {
       indexes.add(index);
@@ -247,7 +247,7 @@ public class RedBlueRandomizer {
    *
    * @return A map of pokemon ids to pokemon names.
    */
-  public HashMap<Integer, String> getPokemonNameMap() {
+  private HashMap<Integer, String> getPokemonNameMap() {
     HashMap<Integer, String> nameMap = new HashMap<Integer, String>();
     for (int i = 0; i < PKMN_INDEXES.length; i++) {
       nameMap.put(PKMN_INDEXES[i], PKMN_NAMES[i]);
