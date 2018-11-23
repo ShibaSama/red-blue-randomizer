@@ -247,7 +247,7 @@ public class RedBlueRandomizer {
    *
    * @return A map of pokemon ids to pokemon names.
    */
-  private HashMap<Integer, String> getPokemonNameMap() {
+  protected HashMap<Integer, String> getPokemonNameMap() {
     HashMap<Integer, String> nameMap = new HashMap<Integer, String>();
     for (int i = 0; i < PKMN_INDEXES.length; i++) {
       nameMap.put(PKMN_INDEXES[i], PKMN_NAMES[i]);
